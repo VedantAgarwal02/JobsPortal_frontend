@@ -1,0 +1,37 @@
+.singleJob {
+    width:80%;
+    margin:auto;
+    margin-top:5px;
+    /* border: 2px solid red; */
+}
+
+.singleJob > h3, .applications>h3 {
+    text-align: left;
+    padding: 5px;
+    font-weight: 800;
+    border-bottom: 1px solid rgb(79, 78, 78);
+}
+
+.jobDetails > tr > td > h4, .jobDetails > tr > td > h5 {
+    text-align: left;
+    margin: 0;
+}
+
+.applications { 
+    width: 80%;
+    margin: auto;
+}
+
+.applicationsTable  {
+    width: 100%;
+}
+
+.applicationsTable > tbody > tr > td {
+    padding: 10px;
+    font-size: 1.1rem;
+}
+
+#editBtn {
+    padding : 5px;
+}
+

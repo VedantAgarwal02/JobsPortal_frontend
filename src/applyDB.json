@@ -1,0 +1,20 @@
+[
+    {
+        "jobId":"1",
+        "seekerId":"100",
+        "status":"pending",
+        "resume":"drive.google"
+    },
+    {
+        "jobId":"3",
+        "seekerId":"100",
+        "status":"pending",
+        "resume":"drive.google"
+    },
+    {
+        "jobId":"2",
+        "seekerId":"100",
+        "status":"interview",
+        "resume":"drive.google"
+    }
+]

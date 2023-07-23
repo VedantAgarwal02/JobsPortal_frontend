@@ -1,0 +1,21 @@
+.loginForm { 
+    border: 1px solid rgb(0, 115, 255);
+    padding: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    /* width: 50%; */
+    margin: auto;
+    border-top: none;
+}
+
+.formItem {
+    margin: auto;
+    padding: 3px;
+    width: 50%;
+    text-align: center;
+}
+
+#submitBtn {
+    width : 50%;
+}
+

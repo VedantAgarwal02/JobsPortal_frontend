@@ -1,0 +1,26 @@
+[
+    {
+        "name":"Vedant Agarwal",
+        "email":"agarwalvedant02@gmail.com",
+        "companyName":"Microsoft",
+        "password":"abc",
+        "role":"employer", 
+        "id":"45"
+    },
+    {
+        "name":"Employer ABC",
+        "companyName":"Google",
+        "email":"employer@gmail.com",
+        "password":"vedant12",
+        "role":"employer",
+        "id":"36"
+    },
+    {
+        "name":"Seeker ABC",
+        "email":"seeker@gmail.com",
+        "qualification":"graduate",
+        "password":"vedant12",
+        "role":"seeker",
+        "id":"100"
+    }
+]

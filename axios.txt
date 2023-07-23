@@ -1,0 +1,3 @@
+deploylink -> https://jobsportal-backend.onrender.com
+
+localhost link -> http://localhost:5000

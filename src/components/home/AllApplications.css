@@ -1,0 +1,37 @@
+.allApplications {
+    width:90%;
+    margin:auto;
+}
+
+.allApplications > h3 {
+    font-weight: 800;
+    margin: 5px;
+    border-bottom: 1px solid rgb(40, 40, 40);
+}
+
+.allApplications > article {
+    width: 80%;
+    margin: auto;
+}
+
+.allApplications > table   {
+    width: 100%;
+    /* border: 1px solid red; */
+}
+
+.allApplications > table > thead {
+    border-bottom: 1px solid rgb(167, 164, 164);
+}
+
+.allApplications > table > tbody > tr {
+    transition-duration: 1s;
+}
+
+.allApplications > table > tbody > tr:hover {
+    background-color: rgb(170, 169, 169);
+}
+
+
+.allApplications > table > thead > tr > th, .allApplications > table > thead > tr > td {
+    padding: 6px;
+}

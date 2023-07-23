@@ -1,0 +1,41 @@
+section { 
+    text-align: center;
+}
+
+section > .btnGroup { 
+    margin : 3px;
+    margin-bottom: 0;
+    width: 50%;
+    background-color: white;
+}
+
+.auth{
+    background-color: #d4e9fa;
+    height:700px;
+    padding: 3px;
+}
+
+#form{
+    background-color: white;
+    width: 50%;
+    margin: auto;
+}
+
+#loginBtn { 
+    border-bottom-left-radius: 0px;
+    transition: 0.5s;
+}
+
+#signupBtn { 
+    border-bottom-right-radius: 0px;
+    transition: 0.5s;
+}
+
+.authBtn:hover {
+    box-shadow:
+    1px 1px #53a7ea,
+    2px 2px #53a7ea,
+    3px 3px #53a7ea;
+    -webkit-transform: translateX(-3px);
+    transform: translateX(-3px);
+}

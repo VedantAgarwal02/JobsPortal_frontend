@@ -1,0 +1,16 @@
+.empMain{
+    width: 80%;
+    margin: auto;
+    margin-top: 5px;
+}
+
+.jobs {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+    margin: 5px;
+    height: 40%;
+    width: 32%;
+}

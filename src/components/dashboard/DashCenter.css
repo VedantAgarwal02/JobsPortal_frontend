@@ -1,0 +1,32 @@
+.main{
+    text-align: center;
+    background-image: url('https://staticlearn.shine.com/l/m/images/blog/job_search_portals.png');
+    height: 440px;
+    /* border: 2px solid red; */
+    position: relative;
+}
+
+.main > h1 {
+    color: rgb(0, 0, 0);
+    font-weight: 800;
+    /* border: 2px solid red; */
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    padding-top: 50px;
+}
+
+.main > h4 {
+    /* border: 2px solid red; */
+    font-weight: 500;
+    padding: 3px;
+}
+
+.main > h3 {
+    padding : 50px;
+    font-weight: 500;
+}
+
+.features {
+    text-align: center;
+}

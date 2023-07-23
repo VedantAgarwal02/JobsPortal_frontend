@@ -1,0 +1,83 @@
+[
+    {
+        "employerId":"45",
+        "jobId":"1",
+        "jobTitle":"Software Engineer",
+        "companyName":"Google",
+        "mode":"online",
+        "package":"9",
+        "type":"tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"45",
+        "jobId":"2",
+        "jobTitle":"Web Developer",
+        "companyName":"Cisco",
+        "mode":"on-site",
+        "location":"Bangalore",
+        "package":"20",
+        "type":"tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"36",
+        "jobId":"3",
+        "jobTitle":"Web Developer",
+        "companyName":"Microsoft",
+        "mode":"online",
+        "package":"12",
+        "type":"tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"36",
+        "jobId":"4",
+        "jobTitle":"Web Developer",
+        "companyName":"Facebook",
+        "mode":"online",
+        "package":"12",
+        "type":"tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"36",
+        "jobId":"5",
+        "jobTitle":"Web Developer",
+        "companyName":"Amazon",
+        "mode":"online",
+        "package":"12",
+        "type":"tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"65",
+        "jobId":"6",
+        "jobTitle":"Network Engineer",
+        "companyName":"TCS",
+        "mode":"online",
+        "package":"12",
+        "type":"non-tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"65",
+        "jobId":"7",
+        "jobTitle":"Network Engineer",
+        "companyName":"TCS",
+        "mode":"online",
+        "package":"12",
+        "type":"non-tech",
+        "totalApplications":"0"
+    },
+    {
+        "employerId":"65",
+        "jobId":"8",
+        "jobTitle":"Network Engineer",
+        "companyName":"TCS",
+        "mode":"online",
+        "package":"12",
+        "type":"non-tech",
+        "totalApplications":"0"
+    }
+]
