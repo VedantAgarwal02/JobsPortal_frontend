@@ -1,30 +1,41 @@
 import React, { useEffect, useState } from 'react'
-import data from '../../jobsDB.json'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import './Employer.css'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { setSelectionRange } from '@testing-library/user-event/dist/utils';
+import link from '../../backendLink';
 
-const Employer = () => {
+const Employer = ({showLoading}) => {
   const [jobData, setJobData] = useState([])
+  const navigate=useNavigate()
   const fetchData = async()=> {
+    showLoading(true, 'Loading Jobs...')
     try{
-      const resp = await axios('https://jobsportal-backend.onrender.com/api/v1/job/', {
+      const resp = await axios(`${link}/api/v1/job/`, {
         headers:{
           'Authorization':`Bearer ${Cookies.get('token')}`
         }
       })
       console.log(resp.data)
       if(resp.data.msg!=='No Jobs Found')
-      setJobData(resp.data.allJobs)
+      setJobData(resp.data.allJobs.reverse())
     }
     catch(error) {
       console.log(error.response)
     }
+
+    showLoading(false, 'random')
   }
   useEffect(()=> {
+
+    const user=JSON.parse(window.localStorage.getItem('user'))
+    if(user.role === 'seeker') {
+      navigate('/seeker')
+    }
+
     fetchData()
   }, [])
   return (

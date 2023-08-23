@@ -2,16 +2,13 @@ import React, { useEffect, useState } from 'react'
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import './CreateJob.css'
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import link from '../../backendLink';
 
-const CreateJob = () => {
+const CreateJob = ({showLoading, showAlert}) => {
 
   const [user, setUser] = useState()
   useEffect(() => {
@@ -32,20 +29,27 @@ const CreateJob = () => {
       return
     }
     
-    const employer=JSON.parse(window.localStorage.getItem('user'))
-    const resp = await axios.post('https://jobsportal-backend.onrender.com/api/v1/job/', {jobTitle, mode, type, package:pckg, employerId:user?._id, companyName:user?.companyName}, {
-      headers :{
-        'Authorization':`Bearer ${Cookies.get('token')}`
-      }
-    })
+    showLoading(true, 'Creating Job')
+    try {
+      const resp = await axios.post(`${link}/api/v1/job/`, {jobTitle, mode, type, package:pckg, employerId:user?._id, companyName:user?.companyName}, {
+        headers :{
+          'Authorization':`Bearer ${Cookies.get('token')}`
+        }
+      })
+      showAlert('success', 'Job Posted Successfully')
+    }
+    catch(error) {
+      console.log(error)
+      showAlert('danger', 'Some Error Occured while posting job.')
+    }
+
+    showLoading(false, 'random')
     
-    console.log(resp)
     if(flag)
-    navigate(`/home/${user.role}`)
+    navigate(`/${user.role}`)
   }
   return (
     <div>
-      <CustomNav />
       <section className="createJob">
       <h3>Create Job :</h3>
       <p>(Details of your company will be attached along with Job Description.)</p>
@@ -81,46 +85,6 @@ const CreateJob = () => {
       </form>
       </section>
     </div>
-  )
-}
-
-const CustomNav = () => {
-  const navigate = useNavigate()
-  const userStyle = {
-    textDecoration:'underline',
-    cursor:'pointer'
-  }
-
-  const [user, setUser] = useState()
-  useEffect(() => {
-    setUser(JSON.parse(window.localStorage.getItem('user')))
-  }, [])
-
-  const logout =() => {
-    if(window.confirm('Are you sure you want to logout?')){
-    // setUser([])
-    Cookies.remove('token')
-    window.localStorage.removeItem('user')
-    navigate('/')
-   }
- }
-  return (
-    <Navbar bg="dark" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand onClick={()=>navigate(`/home/${user.role}`)} style={{cursor:"pointer"}}>JobsPortal</Navbar.Brand>
-          <Nav className="me-auto">
-          <NavDropdown title="Options" id="basic-nav-dropdown">
-              <NavDropdown.Item onClick={()=> navigate(`/profile/${user._id}`)}>Profile Page</NavDropdown.Item>
-              <NavDropdown.Item onClick={()=> logout()} >Logout</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-          <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            Signed in as: <span style={userStyle}> {user?.name} </span>
-          </Navbar.Text>
-        </Navbar.Collapse>
-        </Container>
-      </Navbar>
   )
 }
 

@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const DashCenter = ({buttonVal, navFunc}) => {
     const navigate = useNavigate()
   return (
-    <div>
-        <section className="main"> 
+    <div className='main'>
+        <section className="mainBox"> 
             <h1> Welcome to Jobs Portal </h1> 
             <h4>Your One Stop to find Dream Job</h4>
 

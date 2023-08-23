@@ -11,7 +11,7 @@ function Dashboard() {
   const [buttonVal, setButtonVal] = useState('Login/Signup')
   const navFunc = () => {
     if(Cookies.get('token'))
-    navigate(`/home/${user?.role}`)
+    navigate(`/${user?.role}`)
     else
     navigate('/auth')
   }

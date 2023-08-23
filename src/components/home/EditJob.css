@@ -1,0 +1,25 @@
+.editJob {
+    width:70%;
+    margin: auto;
+    margin-top: 5px;
+    /* border: 2px solid red; */
+}
+
+.editJob>form {
+    /* border: 2px solid red; */
+    width: 95%;
+    margin: auto;
+}
+
+.editJob>form>Button {
+    width: 50%;
+    margin: auto;
+}
+
+.instructions > li {
+    text-align: left;
+}
+
+.applications > Button {
+    width: 60%;
+}

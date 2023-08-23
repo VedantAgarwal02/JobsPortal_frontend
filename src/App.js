@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SharedLayout from './components/home/SharedLayout';
 import About from './components/About';
 import ProtectRoute from './components/ProtectRoute';
@@ -15,51 +15,73 @@ import CreateApplication from './components/home/CreateApplication'
 import CreateJob from './components/home/CreateJob'
 import AllApplications from './components/home/AllApplications';
 import ShowAlert from './components/Alert';
-import Cookies from 'js-cookie';
+import Loading from './components/Loading';
+import './App.css'
+import HomeRedirect from './components/HomeRedirect';
+import EditJob from './components/home/EditJob';
 
 function App() {
   const [user, setUser] = useState();
   const [alert, setAlert] = useState(false);
-  // useEffect(()=> {
-  //   setUser(window.localStorage.getItem('user'))
-  // },[])
+  const [isLoading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  const [alrtMessage, setAlrtMessage] = useState('')
+  const [variant, setVariant] = useState('')
+  const showLoading = function(value, msg='random') {
+    if(value) {
+      setMessage(msg)
+      setLoading(true)
+    }
+    else {
+      setLoading(false)
+    }
+  }
+  
+  const showAlert = async function(vari, msg) {
+    setAlert(true)
+    setAlrtMessage(msg)
+    setVariant(vari)
+    
+    setTimeout(function(){
+      setAlert(false)
+    }, 2000)
+
+  }
 
   return (
     <div className="App">
+      <div id="messages">
+      {isLoading && <Loading msg={message} id='loading' />}
+      {alert && <ShowAlert variant={variant} msg={alrtMessage} id='alert' />}
+      </div>
       <BrowserRouter>
         <Routes>
          
-          <Route path='home' element={
+          <Route path='/' element={
             <ProtectRoute >
               <SharedLayout  />
             </ProtectRoute>
           } >
+                <Route index element={<HomeRedirect />} />
+                <Route path='/seeker' element={<Seeker showLoading={showLoading} showAlert={showAlert} />} />
+                <Route path='/employer' element={<Employer showLoading={showLoading} showAlert={showAlert} />} />
               
-                <Route path='/home/seeker' element={<Seeker />} />
+                <Route path='/job/:jobId' element={<SingleJob showLoading={showLoading} showAlert={showAlert} />} />
+                <Route path='/job/create' element={<CreateJob showLoading={showLoading} showAlert={showAlert} />} />
+                <Route path='/job/edit/:jobId' element={<EditJob showLoading={showLoading} showAlert={showAlert} />} />
+                <Route path='/:jobId/apply' element={<CreateApplication showLoading={showLoading} showAlert={showAlert} />} />
+                <Route path='/:userId/applications' element={<AllApplications showLoading={showLoading} showAlert={showAlert}  />} />
+                <Route path='/profile/seeker/:seekerId' element={<ProtectRoute ><SeekerProfile /></ProtectRoute>} />
+
                 
-                <Route path='/home/employer' element={<Employer />} />
-              
+                <Route path='/profile/employer/:empId' element={<ProtectRoute ><EmployerProfile /></ProtectRoute>} />
           </Route>
 
-          <Route path='/job/:jobId' element={<ProtectRoute ><SingleJob /></ProtectRoute>} />
-
-          <Route path='/job/create' element={<ProtectRoute><CreateJob /></ProtectRoute>} />
-
-          <Route path='/:jobId/apply' element={<ProtectRoute><CreateApplication /></ProtectRoute>} />
-
-          <Route path='/:userId/applications' element={<ProtectRoute><AllApplications /></ProtectRoute>} />
-
-          <Route path='aboutus' element={<ProtectRoute><About /></ProtectRoute>} />
+          <Route path='aboutus' element={<About />} />
           
-          <Route path='/' element={<Dashboard />} />
+          <Route path='/dashboard' element={<Dashboard />} />
 
-          
-          <Route path='/profile/seeker/:seekerId' element={<ProtectRoute ><SeekerProfile /></ProtectRoute>} />
-          
-          <Route path='/profile/employer/:empId' element={<ProtectRoute ><EmployerProfile /></ProtectRoute>} />
-          
-
-          <Route path='auth' element={<Auth />} />
+          <Route path='/auth' element={<Auth showLoading={showLoading} showAlert={showAlert} />} />
 
           <Route path='*' element={<NotFound />} />
         </Routes>

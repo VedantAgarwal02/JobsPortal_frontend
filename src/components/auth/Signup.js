@@ -5,8 +5,9 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import link from '../../backendLink';
 
-const Signup = () => {
+const Signup = ({showLoading, showAlert}) => {
   const navigate = useNavigate()
   const [isEmployer, setIsEmployer] = useState(true)
 
@@ -20,45 +21,54 @@ const Signup = () => {
     const number=document.getElementById('number')?.value
     const password=document.getElementById('password')?.value
     const confirmPassword=document.getElementById('confirmPassword')?.value
+
+    showLoading(true, 'Signing Up...')
     
     if(!name || !email || !number || !password || !confirmPassword || password!==confirmPassword) {
+      showLoading(false, 'random')
       alert("Please enter all the details")
       return
     }
     if(role==='employer' && !companyName) {
+      showLoading(false, 'random')
       alert("Please enter all the details")
       return
     }
     else if(role==='seeker' && !qualification) {
+      showLoading(false, 'random')
       alert("Please enter all the details")
       return
     }
-
     
     if(role==='employer') {
       try {
-        const resp = await axios.post('https://jobsportal-backend.onrender.com/api/v1/auth/signup', {name, role, email, number, password, confirmPassword, companyName});
+        const resp = await axios.post(`${link}/api/v1/auth/signup`, {name, role, email, number, password, confirmPassword, companyName});
         Cookies.set('token', resp.data.token)
         const empData = resp.data.newEmployer
-        window.localStorage.setItem('user', JSON.stringify({_id:empData._id, name:empData.name, role}))
-        navigate(`/home/${role}`)
+        window.localStorage.setItem('user', JSON.stringify({...empData, role}))
+        showAlert('success', 'Signup Success')
+        navigate(`/${role}`)
       }
       catch(error) {
         console.log(error)
+        showAlert('danger', 'Some error occured while signing up, Please try again.')
       }
     }
     else {
       try{
-        const resp = await axios.post('https://jobsportal-backend.onrender.com/api/v1/auth/signup', {name, role, email, number, password, confirmPassword, qualification})
+        const resp = await axios.post(`${link}/api/v1/auth/signup`, {name, role, email, number, password, confirmPassword, qualification})
         Cookies.set('token', resp.data.token)
         const seekerData = resp.data.newSeeker
-        window.localStorage.setItem('user', JSON.stringify({_id:seekerData._id,qualification:seekerData.qualification, name:seekerData.name, role}))
-        navigate(`/home/${role}`)
+        window.localStorage.setItem('user', JSON.stringify({...seekerData, role}))
+        showAlert('success', 'Signup Success')
+        navigate(`/${role}`)
       }
       catch(error) {
         console.log(error)
+        showAlert('danger', 'Some error occured while signing up, Please try again.')
       }
     }
+    showLoading(false, 'random')
   }
 
   return (

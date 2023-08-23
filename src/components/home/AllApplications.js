@@ -2,18 +2,20 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import Container from 'react-bootstrap/Container';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import './AllApplications.css'
+import { normalizeText } from '../../textConverter';
+import link from '../../backendLink'
+import { Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash, faLink } from '@fortawesome/free-solid-svg-icons'
 
-const AllApplications = () => {
+const AllApplications = ({showLoading, showAlert}) => {
   const [user, setUser] = useState()
   const [applications, setApplications] = useState([])
   const fetchData =  async ()=> {
+    showLoading(true, `Fetching all Applications...`)
     try {
-      const resp = await axios.get(`https://jobsportal-backend.onrender.com/api/v1/application/`, {
+      const resp = await axios.get(`${link}/api/v1/application/`, {
         headers : {
           Authorization : `Bearer ${Cookies.get('token')}`
         }
@@ -24,15 +26,20 @@ const AllApplications = () => {
     catch(error) {
       console.log(error)
     }
+
+    showLoading(false, 'random')
   }
+
+  const removeApplication = (id) => {
+    setApplications(applications.filter(app => app._id !== id))
+  }
+
   useEffect(()=> {
     setUser(JSON.parse(window.localStorage.getItem('user')))
     fetchData()
   }, [])
   return (
     <div >
-      <CustomNav />
-
       <section className="allApplications">
       <h3>Your Job Applications : </h3> 
 
@@ -49,7 +56,7 @@ const AllApplications = () => {
           </thead>
           <tbody>
             {applications.map(application => {
-              return <ApplicationCard key={application._id} application={application} />
+              return <ApplicationCard key={application._id} application={application} removeApplication={removeApplication} showLoading={showLoading} showAlert={showAlert} />
             })}
           </tbody>
         </table>
@@ -68,52 +75,45 @@ const AllApplications = () => {
   )
 }
 
-const CustomNav = () => {
+const ApplicationCard = ({application, showLoading, showAlert, removeApplication})=> {
   const navigate = useNavigate()
-  const [user, setUser] = useState()
-  useEffect(() => {
-    setUser(JSON.parse(window.localStorage.getItem('user')))
-  }, [])
 
-  const logout =() => {
-    if(window.confirm('Are you sure you want to logout?')){
-    Cookies.remove('token')
-    window.localStorage.removeItem('user')
-    navigate('/')
-   }
- }
-  const userStyle = {
-    textDecoration:'underline',
-    cursor:'pointer'
+  const deleteApp = async() => {
+
+    if(!window.confirm('Are you sure you wish to delete your application?'))
+    return
+
+    showLoading(true, 'Deleting Application')
+    try {
+      const resp = await axios.delete(`${link}/api/v1/application/${application.jobId}/${application._id}`, {
+        headers:{
+          Authorization:`Bearer ${Cookies.get('token')}`
+        }
+      });
+      console.log(resp)
+      if(resp.data.success) {
+        showAlert('success', 'Application Deleted')
+        removeApplication(application._id)
+      }
+    }
+    catch(error) {
+      showAlert('danger', 'Error Occured')
+    }
+
+    showLoading(false);
   }
   return (
-    <Navbar bg="dark" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand onClick={()=>navigate(`/home/${user.role}`)} style={{cursor:"pointer"}}>JobsPortal</Navbar.Brand>
-          <Nav className="me-auto">
-          <NavDropdown title="Options" id="basic-nav-dropdown">
-              <NavDropdown.Item onClick={()=> navigate(`/profile/${user.id}`)}>Profile Page</NavDropdown.Item>
-              <NavDropdown.Item onClick={()=>logout()} >Logout</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-          <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            Signed in as: <span style={userStyle}> {user?.name} </span>
-          </Navbar.Text>
-        </Navbar.Collapse>
-        </Container>
-      </Navbar>
-  )
-}
-
-const ApplicationCard = ({application})=> {
-  const navigate = useNavigate()
-  return (
-    <tr onClick={()=>navigate(`/job/${application.jobId}`)}>
-      <td>{application.companyName}</td>
-      <td>{application.jobTitle}</td>
-      <td>{application.status}</td>
+    <tr >
+      <td>{normalizeText(application.companyName)}</td>
+      <td>{normalizeText(application.jobTitle)}</td>
+      <td>{normalizeText(application.status)}</td>
       <td> <a href={application.resume}>Link</a> </td>
+      <td>
+      <FontAwesomeIcon icon={faLink} onClick={()=>navigate(`/${application.jobId}/apply`)} />
+      </td>
+      <td>
+        <FontAwesomeIcon id='deleteApp' icon={faTrash} size="lg" onClick={deleteApp} style={{cursor:'pointer'}} />
+      </td>
     </tr>
   )
 }

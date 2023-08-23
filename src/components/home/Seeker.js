@@ -2,30 +2,45 @@ import React, { useState, useEffect } from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import './Seeker.css'
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import link from '../../backendLink';
 
-const Seeker = () => {
+const Seeker = ({showLoading, showAlert}) => {
   const [jobData, setJobData] = useState([])
+  const navigate=useNavigate()
 
   const fetchData = async()=> {
     try{
-      const resp = await axios('https://jobsportal-backend.onrender.com/api/v1/job/', {
+      showLoading(true, 'Loading all the Jobs...');
+      const resp = await axios(`${link}/api/v1/job/`, {
         headers:{
           'Authorization':`Bearer ${Cookies.get('token')}`
         }
       })
+      // console.log(resp)
       if(resp.data.msg!=='No Jobs Found'){
         let allJobs = resp.data.allJobs
-        setJobData(allJobs)
+        setJobData(allJobs.reverse())
       }
     }
     catch(error) {
       console.log(error.response)
+      showAlert('danger', 'Error Occured')
     }
+    showLoading(false, 'false')
   }
   useEffect(()=> {
+
+    const user=JSON.parse(window.localStorage.getItem('user'))
+    if(user.role === 'employer') {
+      navigate('/employer')
+    }
+
+    // if(JSON.parse(window.localStorage.getItem('user')).role === 'employer') 
+    // return <Navigate to='/employer' />
+
     fetchData()
   }, [])
 

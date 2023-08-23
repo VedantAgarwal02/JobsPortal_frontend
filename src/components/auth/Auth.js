@@ -7,13 +7,14 @@ import './Auth.css'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'js-cookie'
 
-const Auth = () => {
+const Auth = ({showLoading, showAlert}) => {
   const navigate = useNavigate()
   const [login, setLogin] = useState(true)
+
   useEffect(()=> {
     if(Cookies.get('token')) {
       const role = JSON.parse(window.localStorage.getItem('user')).role
-      navigate(`/home/${role}`)
+      navigate(`/${role}`)
     }
   })
   return (
@@ -28,8 +29,8 @@ const Auth = () => {
         <article id='form'>
           {
           login ? 
-          <Login /> : 
-          <Signup />
+          <Login showLoading={showLoading} showAlert={showAlert} /> : 
+          <Signup showLoading={showLoading} showAlert={showAlert} />
           }
         </article>
       </section>

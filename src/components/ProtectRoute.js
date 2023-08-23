@@ -5,7 +5,8 @@ import { Navigate } from 'react-router-dom'
 function ProtectRoute({children}) {
   
     if(!Cookies.get('token')) {
-        return <Navigate to={'/'} />
+        window.localStorage.removeItem('user')
+        return <Navigate to={'/dashboard'} />
     }
 
     return children;

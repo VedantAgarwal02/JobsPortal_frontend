@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import './SingleJob.css'
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import JobDescription from './JobDescription';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import {normalizeText} from '../../textConverter'
+import link from '../../backendLink'
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
-const SingleJob = () => {
+const SingleJob = ({showLoading, showAlert}) => {
   const params = useParams()
-  const [job, setJob] = useState()
-  const [applications, setApplications] = useState()
+  const [job, setJob] = useState({jobTitle:'...', companyName:'...', package:'-', totalApplications:'-'})
+  const [applications, setApplications] = useState([{_id:'1', applicantName:'--', status:'--', qualification:'--', resume:'--'}])
   const [user, setUser] = useState()
   let jobId;
   const fetchData = async()=> {
+    showLoading(true, 'Loading Job Details...')
     try {
-      const resp = await axios(`https://jobsportal-backend.onrender.com/api/v1/job/${jobId}`, {
+      const resp = await axios(`${link}/api/v1/job/${jobId}`, {
         headers : {
           Authorization : `Bearer ${Cookies.get('token')}`
         }
@@ -30,7 +33,10 @@ const SingleJob = () => {
         console.log("some error occurred")
       }
 
-      const resp1 = await axios(`https://jobsportal-backend.onrender.com/api/v1/application/${jobId}`, {
+      showLoading(false, 'random')
+      showLoading(true, 'Loading Application Details...')
+
+      const resp1 = await axios(`${link}/api/v1/application/${jobId}`, {
         headers : {
           Authorization : `Bearer ${Cookies.get('token')}`
         }
@@ -41,6 +47,8 @@ const SingleJob = () => {
     catch(error) {
       console.log(error)
     }
+
+    showLoading(false, 'random')
   }
   useEffect(()=> {
     jobId = params.jobId;
@@ -49,9 +57,8 @@ const SingleJob = () => {
   },[])
   return (
     <div>
-      <CustomNav />
       
-      <JobDescription job={job} />
+      <JobDescription job={job} user={user} showAlert={showAlert} showLoading={showLoading} />
 
       <br />
       <br />
@@ -66,7 +73,7 @@ const SingleJob = () => {
             ?
             <div style={{width:"70%", margin:'auto'}} >
               <hr />
-              <h5> There are no applications for you job posting yet. </h5>
+              <h5> There are no applications for your job posting yet. </h5>
               <p> You'll be able to see applications' list, once someone applies for it. </p>
               <hr />
             </div>
@@ -83,7 +90,7 @@ const SingleJob = () => {
               </thead>
               <tbody>
                 {applications?.map(application => {
-                  return <ApplicationCard key={application._id} application={application} />
+                  return <ApplicationCard key={application?._id} application={application} showAlert={showAlert} showLoading={showLoading} />
                 })}
               </tbody>
             </table>
@@ -97,53 +104,59 @@ const SingleJob = () => {
   )
 }
 
-const CustomNav = () => {
-  const navigate = useNavigate()
-  const [user, setUser] = useState()
-  useEffect(() => {
-    setUser(JSON.parse(window.localStorage.getItem('user')))
-  }, [])
+const ApplicationCard = ({application, showLoading, showAlert})=> {
+  const [editStatus, setEditStatus] = useState(false)
+  const [status, setStatus] = useState(application?.status)
 
-  const logout =() => {
-    if(window.confirm('Are you sure you want to logout?')){
-    Cookies.remove('token')
-    window.localStorage.removeItem('user')
-    navigate('/')
-   }
- }
-  const userStyle = {
-    textDecoration:'underline',
-    cursor:'pointer'
+  const handleSave =  async () => {
+    showLoading(true, 'Updating Status of Application')
+    try {
+      const resp = await axios.patch(`${link}/api/v1/application/${application.jobId}/${application._id}`, {status}, {
+        headers:{
+          Authorization:`Bearer ${Cookies.get('token')}`
+        }
+      })
+
+      if(resp.data.success) {
+        showAlert('success', 'Application Updated')
+        application.status = status
+      }
+    }
+    catch(error) {
+      showAlert('danger', 'Error Occured')
+    }
+    setEditStatus(false)
+    showLoading(false)
   }
-  return (
-    <Navbar bg="dark" data-bs-theme="dark">
-        <Container>
-          <Navbar.Brand onClick={()=>navigate(`/home/${user.role}`)} style={{cursor:"pointer"}}>JobsPortal</Navbar.Brand>
-          <Nav className="me-auto">
-          <NavDropdown title="Options" id="basic-nav-dropdown">
-              <NavDropdown.Item onClick={()=> navigate(`/profile/${user.id}`)}>Profile Page</NavDropdown.Item>
-              <NavDropdown.Item onClick={()=>logout()} >Logout</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-          <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            Signed in as: <span style={userStyle}> {user?.name} </span>
-          </Navbar.Text>
-        </Navbar.Collapse>
-        </Container>
-      </Navbar>
-  )
-}
 
-const ApplicationCard = ({application})=> {
-  // console.log(application)
   return (
     <tr>
       <td>  {application.applicantName}  </td>
-      <td>  {application.qualification}  </td>
-      <td>  {application.status}  </td>
+      <td>  {normalizeText(application.qualification)}  </td>
+      {
+        editStatus ?
+        <td >
+        <FloatingLabel label="Status Of Application" className='mb-3' >
+            <Form.Select id="status" aria-label="Floating label" value={status} onChange={e => setStatus(e.target.value)} >
+              <option value="pending">Pending</option>
+              <option value="interview">Interview</option>
+              <option value="hired">Hired</option>
+              <option value="rejected">Rejected</option>
+            </Form.Select>
+          </FloatingLabel>
+      </td>:
+      <td>  {normalizeText(application.status)}  </td>
+      
+      }
       <td>  <a href={application.resume}>Link</a>  </td>
-      <td>  <Button size='sm' variant='outline-primary' id='editBtn' >Edit Status</Button>  </td>
+
+      {
+        editStatus ?
+        <td>  <Button size='sm' variant='outline-success' id='editBtn' onClick={handleSave} >Save Status</Button>  </td>:
+        <td>
+          <Button size='sm' variant='outline-primary' id='editBtn' onClick={()=>setEditStatus(true)} >Edit Status </Button> 
+        </td>
+      }
     </tr>
   )
 }

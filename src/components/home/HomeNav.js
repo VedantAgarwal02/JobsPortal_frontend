@@ -36,7 +36,7 @@ const HomeNav = () => {
     if(window.confirm('Are you sure you want to logout?')){
     window.localStorage.removeItem('user')
     Cookies.remove('token')
-    navigate('/')
+    navigate('/dashboard')
    }
  }
  
@@ -44,7 +44,7 @@ const HomeNav = () => {
     <div>
         <Navbar bg="dark" data-bs-theme="dark">
         <Container>
-          <Navbar.Brand onClick={()=>navigate(`/home/${userRole}`)} style={{cursor:"pointer"}}>JobsPortal</Navbar.Brand>
+          <Navbar.Brand onClick={()=>navigate(`/${userRole}`)} style={{cursor:"pointer"}}>JobsPortal</Navbar.Brand>
           <Nav className="me-auto">
           <Nav.Link onClick={()=>handleClick()}>
             {userRole==='employer'?'Post Job Opening':'View your applications'}

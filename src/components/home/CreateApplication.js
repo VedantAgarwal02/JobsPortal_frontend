@@ -10,36 +10,44 @@ import { Button } from 'react-bootstrap';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import link from '../../backendLink';
 
-const CreateApplication = () => {
+const CreateApplication = ({showLoading, showAlert}) => {
   const params = useParams()
-  const [job, setJob] = useState()
+  const [job, setJob] = useState({jobTitle:'...', companyName:'...', package:'-', totalApplications:'-'})
   const [user, setUser] = useState()
   const [isApplied, setIsApplied] = useState(false)
   let jobId;
   const navigate = useNavigate()
 
   const fetchData = async () => {
+    showLoading(true, 'Loading Job Details...')
     try{
-      const resp = await axios.get(`https://jobsportal-backend.onrender.com/api/v1/job/${jobId}`, {
+      const resp = await axios.get(`${link}/api/v1/job/${jobId}`, {
       headers:{
         Authorization : `Bearer ${Cookies.get('token')}`
       }
-
-      
     })
     
+    // showLoading(false, 'random')
+
+    showLoading(true, 'Getting your Application Details...')
+
     const tempUser = (JSON.parse(window.localStorage.getItem('user'))._id)
     try {
-      const application = await axios.get(`https://jobsportal-backend.onrender.com/api/v1/application/${params.jobId}/${tempUser}`, {
+      const resp1 = await axios.get(`${link}/api/v1/application/`, {
       headers : {
         Authorization : `Bearer ${Cookies.get('token')}`
       }
     })
-
-    if(application.data.success) {
-      setIsApplied(true)
-    }
+    let applicationsOfUser = resp1.data.applications
+    console.log(applicationsOfUser);
+    if(applicationsOfUser.length===0)
+    setIsApplied(false)
+    else if(applicationsOfUser.filter(app => app.jobId === jobId).length !== 0)
+    setIsApplied(true)
+    else 
+    setIsApplied(false)
 
     }
     catch(error) {
@@ -47,7 +55,7 @@ const CreateApplication = () => {
       console.log(error)
     }
 
-    
+    showLoading(false, 'random')
     
     if(resp.data.success){
       setJob(resp.data.job)
@@ -69,9 +77,9 @@ const CreateApplication = () => {
       alert('Please provide link of your resume')
       return
     }
-    
+    showLoading(true, 'Applying for job...')
     try {
-      const resp = await axios.post(`https://jobsportal-backend.onrender.com/api/v1/application/${params.jobId}`, {resume,qualification:user.qualification, applicantName:user.name,companyName:job.companyName, jobTitle:job.jobTitle}, {
+      const resp = await axios.post(`${link}/api/v1/application/${params.jobId}`, {resume,qualification:user.qualification, applicantName:user.name,companyName:job.companyName, jobTitle:job.jobTitle}, {
         headers : {
           Authorization : `Bearer ${Cookies.get('token')}`
         }
@@ -81,17 +89,21 @@ const CreateApplication = () => {
 
       if(resp.data.success) {
         let prevApplications = job.totalApplications;
-        const updateApplication = await axios.patch(`https://jobsportal-backend.onrender.com/api/v1/job/${params.jobId}`, {totalApplications:prevApplications+1}, {
+        const updateApplication = await axios.patch(`${link}/api/v1/job/${params.jobId}`, {totalApplications:prevApplications+1}, {
           headers : {
             Authorization : `Bearer ${Cookies.get('token')}`
           }
         })
-        navigate(`/home/${user.role}`)
+        showAlert('success', 'Application submitted successfully')
+        navigate(`/${user.role}`)
       }
     }
     catch(error) {
+      showAlert('danger', 'Some error occured while applying, Please try again later.')
       console.log(error)
     }
+
+    showLoading(false, 'random');
   }
 
   useEffect(()=> {
@@ -101,7 +113,7 @@ const CreateApplication = () => {
   }, [])
   return (
     <div>
-      <CustomNav />
+      {/* <CustomNav /> */}
       
       <JobDescription job={job} />
       <br />
@@ -134,7 +146,7 @@ const CreateApplication = () => {
 
         <Button type='submit' onClick={handleSubmit}>Submit your Application</Button>
         </section>
-      }
+        }
       </section>
     </div>
   )
